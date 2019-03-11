@@ -1,2 +1,3 @@
-#include "define.h" 
+#include "define.h"
+
 float consigne(float csgn);

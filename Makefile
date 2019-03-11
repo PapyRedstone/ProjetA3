@@ -1,5 +1,5 @@
 CFLAGS = -g -Wall -pedantic
-LDFLAGS = 
+LDFLAGS = ./ftd2xx.lib
 
 SRC = $(wildcard *.c)
 NOM = $(basename $(notdir $(SRC)))
@@ -13,7 +13,7 @@ ProjetA3.exe : $(OBJ)
 	gcc obj/* $(LDFLAGS) -o $@ 
 
 obj/%.o: %.c
-	gcc -c -Iinclude $(CFLAGS) -o $@ $<
+	gcc -c -I. $(CFLAGS) -o $@ $<
 
 clean:
 	rm obj/*.o *.out *.gch -f
