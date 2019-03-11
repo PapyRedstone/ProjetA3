@@ -1,7 +1,7 @@
 CFLAGS = -g -Wall -pedantic
 LDFLAGS = 
 
-SRC = $(wildcard src/*.c)
+SRC = $(wildcard *.c)
 NOM = $(basename $(notdir $(SRC)))
 OBJ = $(addprefix obj/, $(addsuffix .o, $(NOM)))
 
@@ -12,7 +12,7 @@ remake: clean ProjetA3.out
 ProjetA3.out : $(OBJ)
 	gcc obj/* $(LDFLAGS) -o $@ 
 
-obj/%.o: src/%.c
+obj/%.o: %.c
 	gcc -c -Iinclude $(CFLAGS) -o $@ $<
 
 clean:
