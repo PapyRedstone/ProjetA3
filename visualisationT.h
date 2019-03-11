@@ -1,3 +1,4 @@
-	#include "define.h" 
+#include <unistd.h>
+#include "define.h" 
 
-   void visualisationT(temp_t myTemp);
+void visualisationT(temp_t myTemp);

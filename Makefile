@@ -5,11 +5,11 @@ SRC = $(wildcard *.c)
 NOM = $(basename $(notdir $(SRC)))
 OBJ = $(addprefix obj/, $(addsuffix .o, $(NOM)))
 
-all: ProjetA3.out
+all: ProjetA3.exe
 
-remake: clean ProjetA3.out
+remake: clean ProjetA3.exe
 
-ProjetA3.out : $(OBJ)
+ProjetA3.exe : $(OBJ)
 	gcc obj/* $(LDFLAGS) -o $@ 
 
 obj/%.o: %.c
