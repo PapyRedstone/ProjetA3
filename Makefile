@@ -10,7 +10,7 @@ all: ProjetA3.exe
 remake: clean ProjetA3.exe
 
 ProjetA3.exe : $(OBJ)
-	gcc obj/* $(LDFLAGS) -o $@ 
+	gcc obj/* $(LDFLAGS) $(CFLAGS) -o $@ 
 
 obj/%.o: %.c
 	gcc -c -Iinclude $(CFLAGS) -o $@ $<
