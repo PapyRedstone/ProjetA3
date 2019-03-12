@@ -2,11 +2,15 @@
 	 
 float regulationTest(int regul,float csgn,float* tabT, int nT){
   float cmd = 100.;
-
+  int i;
+  
   if(regul == 1){
     cmd = ToR(csgn, tabT[nT-1]);
-  }else{
-    cmd = PID(csgn, tabT, nT);
+  }else if(regul == 2){
+    PID_param p = {1,0.1,0.1, 10, 0, 0, 0};
+    for(i=0; i<nT; i++){
+      cmd = PID(csgn, tabT[i], &p);
+    }
   }
   
   return cmd;
@@ -19,19 +23,34 @@ float ToR(float csgn, float Tint){
   return 0.0;
 }
 
-float PID(float csgn, float* tabT, int nT){
-  float Kp = 1, Ki = 0.1, Kd = 0.1, P,I,D, error, sum_error = 0, last_error;
-  int i;
-  //compute errors
-  for(i=0; i<nT; i++){
-    last_error = error;
-    error = tabT[i] - csgn;
-    sum_error += error;
+float PID(float csgn, float Tint, PID_param *param){
+  static float integral = 0;
+  float P,I,D, error, derivated, result;
+  
+  error = csgn - Tint;
+  
+  P = param->Kp * error;
+  if(param->t){
+    integral += (error + param->lasterror)/2 *param->dt;
+    derivated = (error - param->lasterror) / param->t;
+    I = param->Ki * integral;
+    D = param->Kd * derivated;
+  }else{
+    I =0;
+    D = 0;
   }
-
-  P = Kp * error;
-  I = Ki * sum_error;
-  D = Kd * (error - last_error);
-
-  return P+I+D;
+  
+  result = P+I+D;
+  
+  if(result > 100){
+    result = 100;
+  }else if(result < 0){
+    result = 0;
+  }
+  
+  param->lasterror = error;
+  param->lastTint = Tint;
+  param->t += param->dt;
+  
+  return result;
 }

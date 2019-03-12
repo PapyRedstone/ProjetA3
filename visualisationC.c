@@ -10,7 +10,6 @@ void visualisationC(float puissance_f){
 
     if((int)puissance_f){
       fprintf(data, "true\n");
-      printf("%d", (int)puissance_f);
     }else{
       fprintf(data, "false\n");
     }
