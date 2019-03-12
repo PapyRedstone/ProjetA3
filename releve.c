@@ -15,53 +15,51 @@ FT_HANDLE initUSB(){
 temp_t releve(FT_HANDLE ftHandle){
 
     temp_t temperature;
-    temperature.interieure = 0;
-    temperature.exterieure = 0;
+    temperature.interieure = -1;        //Température initialisée à -1 pour traiter les cas d'erreurs ensuite
+    temperature.exterieure = -1;        //Température initialisée à -1 pour traiter les cas d'erreurs ensuite
+    int SOText, SOTint;                 //Variables permettant la récupération des températures à partir des octets reçus
     FT_STATUS ftStatus;
-    DWORD EventDWord;
-    DWORD TxBytes;
-    int SOText = 0, SOTint = 0;
-    int i;
-    int j = 0;
-    DWORD RxBytes;
+    DWORD RxBytes = 6;                  //Nombre d'octets que l'on va recevoir
     DWORD BytesReceived;
-    char RxBuffer[256];
+    char RxBuffer[48];      //RxBuffer correspond aux octets récupérés par la suite, on récupèrera 6 octets
 
-
-    FT_GetStatus(ftHandle,&RxBytes,&TxBytes,&EventDWord);
-    while(RxBytes < 0);
-
-    ftStatus = FT_Read(ftHandle,RxBuffer,RxBytes,&BytesReceived);
+    ftStatus = FT_Read(ftHandle,RxBuffer,RxBytes,&BytesReceived);       //On lit grâce à FT_Read() et ftStatus = FT_OK si la lecture est faite
     if (ftStatus == FT_OK) {
         // FT_Read OK
-        printf("In");
-        for(i=0;i<sizeof(RxBuffer);i++){
-            printf("%d", RxBuffer[i]);
+
+        switch((RxBuffer[0] & 0xF0) >> 4){      //switch permettant de traiter chaque cas de réception, pour pouvoir identifier chaque octet et les traiter
+            case 0:     //1er Quartet de l'octet 1 pour la température extérieure = 0 
+                SOText = ((RxBuffer[0] & 0x0F) <<8) | ((RxBuffer[1] & 0x0F) <<4) | (RxBuffer[2] & 0x0F);        //Calcul des températures grâce à RxBuffer
+                SOTint = ((RxBuffer[3] & 0x0F) <<8) | ((RxBuffer[4] & 0x0F) <<4) | (RxBuffer[5] & 0x0F);
+            break;
+            case 1:     //1er Quartet de l'octet 2 pour la température extérieure = 1 
+                SOText = ((RxBuffer[5] & 0x0F) <<8) | ((RxBuffer[0] & 0x0F) <<4) | (RxBuffer[1] & 0x0F);        //Calcul des températures grâce à RxBuffer décalé de 1
+                SOTint = ((RxBuffer[2] & 0x0F) <<8) | ((RxBuffer[3] & 0x0F) <<4) | (RxBuffer[4] & 0x0F);
+            break;
+            case 2:     //1er Quartet de l'octet 3 pour la température extérieure = 2 
+                SOText = ((RxBuffer[4] & 0x0F) <<8) | ((RxBuffer[5] & 0x0F) <<4) | (RxBuffer[0] & 0x0F);        //Calcul des températures grâce à RxBuffer décalé de 2
+                SOTint = ((RxBuffer[1] & 0x0F) <<8) | ((RxBuffer[2] & 0x0F) <<4) | (RxBuffer[3] & 0x0F);
+            break;
+            case 8:     //1er Quartet de l'octet 1 pour la température intérieure = 8 
+                SOText = ((RxBuffer[3] & 0x0F) <<8) | ((RxBuffer[4] & 0x0F) <<4) | (RxBuffer[5] & 0x0F);        //Calcul des températures grâce à RxBuffer décalé de 3
+                SOTint = ((RxBuffer[0] & 0x0F) <<8) | ((RxBuffer[1] & 0x0F) <<4) | (RxBuffer[2] & 0x0F);
+            break;
+            case 9:     //1er Quartet de l'octet 2 pour la température intérieure = 9
+                SOText = ((RxBuffer[2] & 0x0F) <<8) | ((RxBuffer[3] & 0x0F) <<4) | (RxBuffer[4] & 0x0F);        //Calcul des températures grâce à RxBuffer décalé de 4
+                SOTint = ((RxBuffer[5] & 0x0F) <<8) | ((RxBuffer[0] & 0x0F) <<4) | (RxBuffer[1] & 0x0F);
+            break;
+            case 10:    //1er Quartet de l'octet 3 pour la tempérture intérieure = 10
+                SOText = ((RxBuffer[1] & 0x0F) <<8) | ((RxBuffer[2] & 0x0F) <<4) | (RxBuffer[3] & 0x0F);        //Calcul des températures grâce à RxBuffer décalé de 5
+                SOTint = ((RxBuffer[4] & 0x0F) <<8) | ((RxBuffer[5] & 0x0F) <<4) | (RxBuffer[0] & 0x0F);
+            break;
         }
 
-        for(i=0;i<11;i++){
-            SOTint = SOTint + (2048/pow(2,i))*RxBuffer[i+4+j];
-            if(i==3||i==7){
-                j = j+4;
-            }
-        }
-        temperature.interieure = -39.64 + 0.04 * SOTint;
-        printf("%d",SOTint);
-
-        j = 0;
-        for(i=0;i<11;i++){
-            SOText = SOText + (2048/pow(2,i))*RxBuffer[i+28+j];
-            if(i==3||i==7){
-                j = j+4;
-            }
-        }
-        temperature.exterieure = -39.64 + 0.04 * SOText;
-        printf("%d",SOText);
+        temperature.interieure = -39.64 + 0.04 * SOTint;        //Calcul de la température intérieure grâce a SOTint
+        temperature.exterieure = -39.64 + 0.04 * SOText;        //Calcul de la température exterieure grâce a SOText
 
         return temperature;
     }else {
         // FT_Read Failed
-        printf("Erreur 2");
-        return temperature;
+        return temperature;     //retourne les températures = -1 si la lecture a échouée
     }
 }
