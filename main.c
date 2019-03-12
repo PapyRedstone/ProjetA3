@@ -6,7 +6,7 @@
 
 int main(){
   FT_HANDLE descr;
-  temp_t temperature;
+  temp_t temperature = {14,14};
   descr = initUSB();
   temperature = releve(descr);
   float cmd = 0.0, csgn=0; // cmd de chauffage
