@@ -17,7 +17,7 @@ temp_t releve(FT_HANDLE ftHandle){
     temp_t temperature;
     temperature.interieure = -1;        //Température initialisée à -1 pour traiter les cas d'erreurs ensuite
     temperature.exterieure = -1;        //Température initialisée à -1 pour traiter les cas d'erreurs ensuite
-    int SOText = 0, SOTint = 0;                 //Variables permettant la récupération des températures à partir des octets reçus
+    int SOText = 0, SOTint = 0;         //Variables permettant la récupération des températures à partir des octets reçus
     FT_STATUS ftStatus;
     DWORD RxBytes = 6;                  //Nombre d'octets que l'on va recevoir
     DWORD BytesReceived;
