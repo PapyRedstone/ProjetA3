@@ -25,6 +25,9 @@ int main(){
     }
     temperature = releve(descr);
   }
+
+  commande(dscr, 0);
+  FT_Close(dscr);
   
   return EXIT_SUCCESS;
 }
