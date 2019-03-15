@@ -36,8 +36,8 @@ def main():
             pass
         data.close()
         
-        labelText.config(text="Text : "+Text)
-        labelTint.config(text="Tint : "+Tint)
+        labelText.config(text="Text : "+str(Text))
+        labelTint.config(text="Tint : "+str(Tint))
         labelchauffage.config(text=str(chauf))
         ihm.update()
 
