@@ -12,8 +12,8 @@ def main():
     ihm = Tk()
     consigne = Entry(ihm, textvariable="14.0")
     valider = Button(ihm, text="Valider", command=partial(writeConsigne, consigne))
-    labelTint = Label(ihm, text="14.0")
-    labelText = Label(ihm, text="14.0")
+    labelTint = Label(ihm, text="Tint : 14.0")
+    labelText = Label(ihm, text="Text : 14.0")
     labelchauffage = Label(ihm, text="False")
 
     Text = -1
@@ -36,8 +36,8 @@ def main():
             pass
         data.close()
         
-        labelText.config(text=Text)
-        labelTint.config(text=Tint)
+        labelText.config(text="Text : "+Text)
+        labelTint.config(text="Tint : "+Tint)
         labelchauffage.config(text=str(chauf))
         ihm.update()
 
